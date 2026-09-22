@@ -70,4 +70,14 @@ With the API running, open a second terminal at the project root and run:
 
 The dashboard checks API/model readiness, renders the feature fields expected by the saved model, and displays the next-day PM2.5 prediction with its AQI category.
 
+## Docker deployment
+
+After a trained `models/pm25_next_day_model.joblib` exists, start the API and dashboard together:
+
+```bash
+docker compose -f docker-compose.app.yml up --build
+```
+
+The API is available at <http://127.0.0.1:8000/docs> and the dashboard at <http://127.0.0.1:8501>. The Compose stack mounts `models/` read-only into the API container, keeping generated model artifacts out of Git.
+
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.

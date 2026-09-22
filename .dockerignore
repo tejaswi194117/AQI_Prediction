@@ -1,0 +1,12 @@
+.git/
+.venv/
+.env
+__pycache__/
+*.pyc
+airflow/
+data/
+docs/
+notebooks/
+tests/
+models/*.joblib
+models/*.json
