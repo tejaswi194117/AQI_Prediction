@@ -8,3 +8,5 @@ airflow/.env
 airflow/logs/
 data/raw/
 data/gold/ml_aqi_features.csv
+models/*.joblib
+models/*.json

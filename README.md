@@ -48,4 +48,6 @@ For Airflow, run `docker compose up --build` from `airflow/`; the UI is at <http
 
 The feature-builder requires a much larger historical dataset before model training. It produces lag-1/3/7-day PM2.5 values, trailing rolling means, calendar fields, and a next-day PM2.5/category label without crossing missing dates.
 
+Once the backfill produces at least 100 trainable rows, run `.venv/bin/python src/models/train_pm25_model.py`. It uses a chronological 80/20 split, compares mean, linear-regression, and random-forest baselines by test MAE, and saves the selected model plus metrics under `models/`.
+
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.
