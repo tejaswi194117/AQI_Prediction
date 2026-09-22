@@ -38,7 +38,10 @@ def clean_measurements():
             "parameter": parameter.get("name"),
             "value": item.get("value"),
             "unit": parameter.get("units"),
-            "timestamp": datetime_from.get("utc")
+            "timestamp": datetime_from.get("utc"),
+            # Older raw extracts have no aggregation marker and are treated
+            # as hourly/original measurements for backward compatibility.
+            "aggregation": item.get("aggregation", "hours"),
         })
 
     df = pd.DataFrame(records)

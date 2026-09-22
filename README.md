@@ -6,11 +6,13 @@ An Airflow-orchestrated data pipeline that collects Delhi air-quality and weathe
 
 ```text
 OpenAQ locations → stations → sensors → measurements ┐
-                                                       ├→ hourly join → daily gold AQI dataset
+                                                       ├→ weather-aware join → daily gold AQI dataset
 Open-Meteo historical weather ─────────────────────────┘
 ```
 
 The default geographic focus is Delhi (28.6139, 77.2090) within a 0.5-degree bounding box. All location, date-range, and database settings are configurable through `.env`.
+
+For a one-time historical backfill, set `AQI_HISTORY_DAYS=365` and keep `OPENAQ_GRANULARITY=days` in `.env`, then run the pipeline. This requests paginated daily sensor values and matching daily Open-Meteo summaries. Reset the window to a short rolling value afterward for normal daily Airflow runs.
 
 ## Setup
 

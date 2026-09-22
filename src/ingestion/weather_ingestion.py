@@ -8,8 +8,9 @@ from datetime import datetime, timedelta
 LATITUDE = float(os.getenv("AQI_LATITUDE", "28.6139"))
 LONGITUDE = float(os.getenv("AQI_LONGITUDE", "77.2090"))
 today = datetime.now().date()
+HISTORY_DAYS = int(os.getenv("AQI_HISTORY_DAYS", "30"))
 START_DATE = os.getenv(
-    "WEATHER_START_DATE", (today - timedelta(days=31)).isoformat()
+    "WEATHER_START_DATE", (today - timedelta(days=HISTORY_DAYS)).isoformat()
 )
 END_DATE = os.getenv("WEATHER_END_DATE", (today - timedelta(days=1)).isoformat())
 

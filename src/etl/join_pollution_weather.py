@@ -59,25 +59,43 @@ def join_pollution_weather():
         (pollution["timestamp"] <= end_date)
     ].copy()
 
-    # Round pollution measurements to the hour
-    pollution["hour"] = pollution["timestamp"].dt.floor("h")
-
-    weather["hour"] = weather["timestamp"].dt.floor("h")
-
-    # Join pollution measurements with weather
-    joined = pollution.merge(
-        weather[
-            [
-                "hour",
-                "temperature",
-                "humidity",
-                "wind_speed",
-                "precipitation"
-            ]
-        ],
-        on="hour",
-        how="left"
-    )
+    aggregation = pollution.get("aggregation", pd.Series("hours", index=pollution.index))
+    if aggregation.eq("days").all():
+        # A daily OpenAQ value should receive a complete daily weather
+        # summary, rather than only the weather at midnight.
+        pollution["hour"] = pollution["timestamp"].dt.normalize()
+        weather["date"] = weather["timestamp"].dt.normalize()
+        daily_weather = (
+            weather.groupby("date", as_index=False)
+            .agg(
+                temperature=("temperature", "mean"),
+                humidity=("humidity", "mean"),
+                wind_speed=("wind_speed", "mean"),
+                precipitation=("precipitation", "sum"),
+            )
+            .rename(columns={"date": "hour"})
+        )
+        joined = pollution.merge(daily_weather, on="hour", how="left")
+    elif aggregation.eq("hours").all():
+        pollution["hour"] = pollution["timestamp"].dt.floor("h")
+        weather["hour"] = weather["timestamp"].dt.floor("h")
+        joined = pollution.merge(
+            weather[
+                [
+                    "hour",
+                    "temperature",
+                    "humidity",
+                    "wind_speed",
+                    "precipitation"
+                ]
+            ],
+            on="hour",
+            how="left"
+        )
+    else:
+        raise ValueError(
+            "Cannot join mixed OpenAQ aggregation granularities in one run."
+        )
 
     # Remove rows where weather could not be matched
     matched = joined["temperature"].notna().sum()
