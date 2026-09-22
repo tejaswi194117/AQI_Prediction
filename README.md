@@ -42,5 +42,8 @@ For Airflow, run `docker compose up --build` from `airflow/`; the UI is at <http
 - `data/staging/`: cleaned station, measurement, and weather extracts.
 - `data/cleaned/pollution_weather_joined.csv`: hourly pollution/weather records.
 - `data/gold/delhi_daily_air_quality.csv`: daily per-location analytical dataset.
+- `data/gold/ml_aqi_features.csv`: leakage-safe daily ML features and the next-day PM2.5 target.
+
+The feature-builder requires a much larger historical dataset before model training. It produces lag-1/3/7-day PM2.5 values, trailing rolling means, calendar fields, and a next-day PM2.5/category label without crossing missing dates.
 
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.

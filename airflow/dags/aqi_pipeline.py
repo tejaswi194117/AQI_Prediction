@@ -95,6 +95,14 @@ with DAG(
         ),
     )
 
+    build_ml_features = BashOperator(
+        task_id="build_ml_features",
+        bash_command=(
+            "cd /opt/airflow && "
+            "python src/features/build_training_dataset.py"
+        ),
+    )
+
     (
         ingest_openaq
         >> clean_stations
@@ -121,5 +129,6 @@ with DAG(
         >> join_data
         >> create_gold
         >> quality_check
+        >> build_ml_features
         >> load_gold
     )

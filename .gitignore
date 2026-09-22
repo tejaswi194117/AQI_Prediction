@@ -7,3 +7,4 @@ __pycache__/
 airflow/.env
 airflow/logs/
 data/raw/
+data/gold/ml_aqi_features.csv

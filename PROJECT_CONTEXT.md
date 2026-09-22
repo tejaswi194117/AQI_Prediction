@@ -35,6 +35,7 @@ AQI_Prediction_Project/
 ├── src/
 │   ├── ingestion/                        # API clients
 │   ├── etl/                              # Transformations, join, gold creation, checks
+│   ├── features/                         # ML feature dataset construction
 │   └── database/                         # PostgreSQL loads
 ├── dashboard/                            # Empty
 ├── docs/                                 # Empty
@@ -81,6 +82,7 @@ Open-Meteo historical weather ─> raw/weather_delhi_*.json ─> staging/weather
 | `src/etl/join_pollution_weather.py` | Converts OpenAQ UTC timestamps to IST, restricts data to the actual common coverage of pollution and weather (with optional configured limits), floors both sources to an hour, left-joins weather, and writes the joined CSV. |
 | `src/etl/create_analytical_dataset.py` | Aggregates pollutant data daily by location, pivots six pollutants to columns, summarizes daily weather, derives a PM2.5 category, and writes the gold CSV. |
 | `src/etl/data_quality.py` | Checks critical IDs/dates, non-negative pollutants/wind, humidity range, duplicate location/date, AQI labels, and missing PM2.5. Logs issues to CSV. |
+| `src/features/build_training_dataset.py` | Creates leakage-safe location/day features: PM2.5 lags, trailing rolling averages, calendar fields, and next-day PM2.5/AQI targets. It expands missing calendar days before feature calculations. |
 | `src/database/load_gold.py` | Replaces PostgreSQL `analytics.delhi_daily_air_quality` from the gold CSV. |
 | `src/database/load_data.py` | Older base-table loader; it targets a different connection and refers to `data/staging/weather.csv`, not the current `weather_delhi.csv`. |
 | `airflow/dags/aqi_pipeline.py` | Defines the orchestrated DAG and task dependencies. |
@@ -159,8 +161,8 @@ docker compose up --build
 
 ## Important implementation gaps / likely questions
 
-1. **Not a prediction system yet.** There is no ML training, validation split, model artifact, inference endpoint, dashboard, or automated tests.
-2. **Data volume is deliberately limited.** Measurements fetch only up to 100 results per sensor, and API pagination is not implemented.
+1. **Not a prediction system yet.** There is no ML training, validation split, model artifact, inference endpoint, or dashboard. Unit coverage currently covers the feature-builder only.
+2. **Data volume is deliberately limited.** Measurements fetch only up to 100 results per sensor, and API pagination is not implemented. The present gold dataset produces zero trainable next-day rows; collect substantially more contiguous daily history before model training.
 5. **Time and duplicate logic needs review.** The cleaned measurement duplicate key is only `(sensor_id, timestamp)`, potentially removing distinct values at the same time. The pipeline uses period start time rather than an explicit observation time.
 6. **Database setup still needs an external target.** Set `AQI_DATABASE_URL` to the database that should contain the `aqi` and `analytics` schemas. The scripts now use this one setting and create schemas automatically.
 7. **Fragile latest-file selection.** Most steps choose a lexically or modification-time latest raw file, which harms reproducibility and can combine unrelated runs.
