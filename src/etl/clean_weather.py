@@ -4,6 +4,11 @@ import glob
 import os
 
 
+CITY_NAME = os.getenv("AQI_CITY", "Delhi")
+CITY_LATITUDE = float(os.getenv("AQI_LATITUDE", "28.6139"))
+CITY_LONGITUDE = float(os.getenv("AQI_LONGITUDE", "77.2090"))
+
+
 def get_latest_file():
     files = glob.glob("data/raw/weather_delhi_*.json")
 
@@ -53,9 +58,9 @@ def clean_weather():
         )
 
     # Add location information
-    df["city"] = "Delhi"
-    df["latitude"] = 28.63
-    df["longitude"] = 77.20
+    df["city"] = CITY_NAME
+    df["latitude"] = CITY_LATITUDE
+    df["longitude"] = CITY_LONGITUDE
     df["source"] = "Open-Meteo"
 
     # Remove invalid records

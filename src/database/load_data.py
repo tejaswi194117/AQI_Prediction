@@ -1,9 +1,15 @@
 import pandas as pd
-from sqlalchemy import create_engine
+import os
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
 
-# PostgreSQL connection
-DATABASE_URL = "postgresql+psycopg2://localhost/aqi_database"
+load_dotenv()
+
+DATABASE_URL = os.getenv("AQI_DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("AQI_DATABASE_URL must be set in the environment or .env")
 
 engine = create_engine(DATABASE_URL)
 
@@ -29,7 +35,7 @@ def load_pollution_data():
 
 def load_weather_data():
 
-    file_path = "data/staging/weather.csv"
+    file_path = "data/staging/weather_delhi.csv"
 
     df = pd.read_csv(file_path)
 
@@ -47,6 +53,9 @@ def load_weather_data():
 
 
 def main():
+
+    with engine.begin() as connection:
+        connection.execute(text("CREATE SCHEMA IF NOT EXISTS aqi"))
 
     load_pollution_data()
 

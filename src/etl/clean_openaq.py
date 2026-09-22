@@ -1,4 +1,5 @@
 import json
+import os
 import pandas as pd
 from pathlib import Path
 
@@ -7,6 +8,13 @@ RAW_DIR = Path("data/raw")
 STAGING_DIR = Path("data/staging")
 
 STAGING_DIR.mkdir(parents=True, exist_ok=True)
+
+# Delhi is the project's analysis area. These settings can be overridden in
+# `.env` or the Airflow environment for a different city/backfill strategy.
+CITY_NAME = os.getenv("AQI_CITY", "Delhi")
+CITY_LATITUDE = float(os.getenv("AQI_LATITUDE", "28.6139"))
+CITY_LONGITUDE = float(os.getenv("AQI_LONGITUDE", "77.2090"))
+RADIUS_DEGREES = float(os.getenv("AQI_RADIUS_DEGREES", "0.50"))
 
 
 def find_latest_openaq_file():
@@ -79,6 +87,21 @@ def clean_data(df):
     df = df[
         df["longitude"].between(-180, 180)
     ]
+
+    # OpenAQ's locality field is not consistently populated. Use a bounding
+    # box around the configured city so stations really match the weather data.
+    df = df[
+        df["latitude"].between(
+            CITY_LATITUDE - RADIUS_DEGREES,
+            CITY_LATITUDE + RADIUS_DEGREES,
+        )
+        & df["longitude"].between(
+            CITY_LONGITUDE - RADIUS_DEGREES,
+            CITY_LONGITUDE + RADIUS_DEGREES,
+        )
+    ].copy()
+
+    df["city"] = CITY_NAME
 
     print("Clean records:", len(df))
 

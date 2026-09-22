@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 
 def join_pollution_weather():
@@ -33,9 +34,25 @@ def join_pollution_weather():
         errors="coerce"
     )
 
-    # Keep only the common analysis period
-    start_date = pd.Timestamp("2025-02-18 00:00:00")
-    end_date = pd.Timestamp("2025-02-21 23:00:00")
+    # Join only the time period covered by both inputs. Optional environment
+    # dates support reproducible historical backfills without source edits.
+    start_date = max(pollution["timestamp"].min(), weather["timestamp"].min())
+    end_date = min(pollution["timestamp"].max(), weather["timestamp"].max())
+
+    configured_start = os.getenv("ANALYSIS_START_DATE")
+    configured_end = os.getenv("ANALYSIS_END_DATE")
+    if configured_start:
+        start_date = max(start_date, pd.Timestamp(configured_start))
+    if configured_end:
+        end_date = min(end_date, pd.Timestamp(configured_end))
+
+    if start_date > end_date:
+        raise ValueError(
+            "Pollution and weather files have no overlapping timestamps. "
+            "Run the ingestions for the same date range."
+        )
+
+    print(f"Common analysis period: {start_date} to {end_date}")
 
     pollution = pollution[
         (pollution["timestamp"] >= start_date) &

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("OPENAQ_API_KEY")
+MAX_STATIONS = int(os.getenv("OPENAQ_MAX_STATIONS", "20"))
 
 BASE_URL = "https://api.openaq.org/v3/locations"
 
@@ -25,14 +26,16 @@ def fetch_sensors():
         "X-API-Key": API_KEY
     }
 
-    # Use the first 10 Indian locations from our staging file
+    # Stations have already been geographically filtered in clean_openaq.py.
     import pandas as pd
 
     locations_file = Path("data/staging/openaq_stations.csv")
 
     locations = pd.read_csv(locations_file)
 
-    location_ids = locations["station_id"].dropna().astype(int).head(10).tolist()
+    location_ids = (
+        locations["station_id"].dropna().astype(int).head(MAX_STATIONS).tolist()
+    )
 
     all_sensors = []
 

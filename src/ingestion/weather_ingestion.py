@@ -1,14 +1,17 @@
 import requests
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Delhi representative coordinates
-LATITUDE = 28.63
-LONGITUDE = 77.20
-
-START_DATE = "2025-02-18"
-END_DATE = "2025-02-21"
+# Defaults retrieve the prior 30 complete days, avoiding the hard-coded 2025
+# window. Explicit dates make historical backfills reproducible.
+LATITUDE = float(os.getenv("AQI_LATITUDE", "28.6139"))
+LONGITUDE = float(os.getenv("AQI_LONGITUDE", "77.2090"))
+today = datetime.now().date()
+START_DATE = os.getenv(
+    "WEATHER_START_DATE", (today - timedelta(days=31)).isoformat()
+)
+END_DATE = os.getenv("WEATHER_END_DATE", (today - timedelta(days=1)).isoformat())
 
 URL = "https://archive-api.open-meteo.com/v1/archive"
 
@@ -26,7 +29,7 @@ params = {
     "timezone": "Asia/Kolkata"
 }
 
-print("Starting Delhi weather ingestion...")
+print(f"Starting weather ingestion for {START_DATE} to {END_DATE}...")
 
 response = requests.get(URL, params=params, timeout=30)
 
