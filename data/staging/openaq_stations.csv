@@ -1,0 +1,101 @@
+station_name,city,country,latitude,longitude,station_id,source
+SPARTAN - IIT Kanpur,,IN,26.519,80.233,12,OpenAQ
+"Delhi Technological University, Delhi - CPCB",,IN,28.744,77.12,13,OpenAQ
+IGI Airport,,IN,28.56,77.094,15,OpenAQ
+Civil Lines,,IN,28.6787,77.2262,16,OpenAQ
+"R K Puram, Delhi - DPCC",,IN,28.563262,77.186937,17,OpenAQ
+"Punjabi Bagh, Delhi - DPCC",,IN,28.674045,77.131023,50,OpenAQ
+"Income Tax Office, Delhi - CPCB",,IN,28.623499999999996,77.2494,103,OpenAQ
+"Anand Vihar, New Delhi - DPCC",,IN,28.646835,77.316032,235,OpenAQ
+"Mandir Marg, Delhi - DPCC",,IN,28.6341,77.2005,236,OpenAQ
+Collectorate - Gaya - BSPCB,,IN,24.7489694,84.9438395,286,OpenAQ
+"Vikas Sadan, Gurugram - HSPCB",,IN,28.4501238,77.0263051,301,OpenAQ
+"MD University, Rohtak - HSPCB",,IN,28.876028,76.619464,346,OpenAQ
+"Lalbagh, DN Park",,IN,26.84578611,80.93874444,354,OpenAQ
+Alandur Bus Depot,,IN,12.99711389,80.19151667,378,OpenAQ
+"Zoo Park, Hyderabad - TSPCB",,IN,17.349694,78.451437,407,OpenAQ
+"Peenya, Bengaluru - KSPCB",,IN,13.0339,77.51321111,412,OpenAQ
+"IHBAS, Delhi - CPCB",,IN,28.6821,77.305,431,OpenAQ
+"BTM Layout, Bengaluru - KSPCB",,IN,12.912811110000002,77.60921944,594,OpenAQ
+"Haldia, Haldia - WBPCB",,IN,22.06047,88.109737,697,OpenAQ
+Collectorate Jodhpur - RSPCB,,IN,26.2920639,73.0379111111111,703,OpenAQ
+"Rabindra Bharati University, Kolkata - WBSPCB",,IN,22.627875,88.3804,716,OpenAQ
+City Railway Station - KSPCB,,IN,12.9773472,77.5706972222222,797,OpenAQ
+Chandrapur,,IN,19.95,79.3,854,OpenAQ
+"Sanjay Palace, Agra - UPPCB",,IN,27.19865833,78.00598056,860,OpenAQ
+Victoria Memorial - WBSPCB,,IN,22.572646,88.36389499999996,910,OpenAQ
+Collectorate - Muzaffarpur - BSPCB,,IN,26.0762,85.4115,985,OpenAQ
+VK Industrial Area Jaipur - RSPCB,,IN,26.9738778,75.7738777777777,2345,OpenAQ
+"Talkatora District Industries Center, Lucknow - CPCB",,IN,26.83399722,80.8917361,2456,OpenAQ
+US Diplomatic Post: Hyderabad,,IN,17.443464,78.47489,2459,OpenAQ
+US Diplomatic Post: Kolkata,,IN,22.547142,88.351048,2460,OpenAQ
+US Diplomatic Post: Chennai,,IN,13.052371,80.251932,2461,OpenAQ
+Central School,,IN,26.85272778,80.99632778,2463,OpenAQ
+"Shadipur, Delhi - CPCB",,IN,28.651699999999998,77.1581,2503,OpenAQ
+IIT,,IN,12.992513890000001,80.23744722,2549,OpenAQ
+"Sector-6, Panchkula - HSPCB",,IN,30.7057778,76.8531805555555,2583,OpenAQ
+AAQMS Karve Road Pune,,IN,18.497484,73.81349,2585,OpenAQ
+"Manali, Chennai - CPCB",,IN,13.164544,80.26285,2586,OpenAQ
+"Sector16A, Faridabad - HSPCB",,IN,28.410122219999998,77.313775,2587,OpenAQ
+SaneguravaHalli - KSPCB,,IN,12.9916694,77.5458305555555,2589,OpenAQ
+Ardhali Bazar,,IN,25.35055556,82.97833333,2591,OpenAQ
+"BWSSB Kadabesanahalli, Bengaluru - KSPCB",,IN,12.93890556,77.69727222,2592,OpenAQ
+IGSC Planetarium Complex - Patna - BSPCB,,IN,25.3636,85.0755,2593,OpenAQ
+"Sanathnagar, Hyderabad - TSPCB",,IN,17.42329722,78.47469722,2594,OpenAQ
+Nehru Nagar,,IN,26.470308800000005,80.3251749,2595,OpenAQ
+"Solapur, Solapur - MPCB",,IN,17.6599188,75.9063906,2596,OpenAQ
+US Diplomatic Post: New Delhi,,IN,28.598096,77.189066,2597,OpenAQ
+Navi Mumbai Municipal Corporation Airoli,,IN,19.1494,72.9986,2598,OpenAQ
+"Pusa, Delhi - IMD",,IN,28.639645,77.146263,5404,OpenAQ
+"Secretariat, Amaravati - APPCB",,IN,16.5150833,80.5181667,5408,OpenAQ
+"Mahakaleshwar Temple, Ujjain - MPPCB",,IN,23.182719,75.768218,5443,OpenAQ
+"Birla Staff colony, Satna - MPPCB",,IN,24.5908256,80.8574279,5505,OpenAQ
+"Anand Vihar, Delhi - DPCC",,IN,28.647622000000002,77.315809,5509,OpenAQ
+"Punjabi Bagh, Delhi - DPCC",,IN,28.6670856,77.1301247,5540,OpenAQ
+"Burari Crossing, New Delhi - IMD",,IN,28.7256504,77.2011573,5541,OpenAQ
+"Civil Line, Jalandhar - PPCB",,IN,31.321907,75.578914,5542,OpenAQ
+"Model Town, Patiala - PPCB",,IN,30.349388,76.366642,5544,OpenAQ
+Tata Stadium - Jorapokhar - JSPCB,,IN,23.707909,86.41467,5546,OpenAQ
+"BWSSB Kadabesanahalli, Bengaluru - CPCB",,IN,12.9352049,77.6814488,5547,OpenAQ
+"BTM Layout, Bengaluru - CPCB",,IN,12.9135218,77.5950804,5548,OpenAQ
+"Golden Temple, Amritsar - PPCB",,IN,31.62,74.876512,5551,OpenAQ
+"MD University, Rohtak - HSPCB",,IN,28.870083,76.6205,5552,OpenAQ
+"Alandur Bus Depot, Chennai - CPCB",,IN,12.909916100000002,80.1076538,5558,OpenAQ
+"Collectorate, Gaya - BSPCB",,IN,24.7955,84.9994,5559,OpenAQ
+"MIDC Khutala, Chandrapur - MPCB",,IN,19.9775302,79.2337086,5565,OpenAQ
+"Talcher Coalfields,Talcher - OSPCB",,IN,20.9360711,85.1707021,5566,OpenAQ
+"Punjab Agricultural University, Ludhiana - PPCB",,IN,30.9028,75.8086,5569,OpenAQ
+"Aya Nagar, New Delhi - IMD",,IN,28.474261,77.131606,5570,OpenAQ
+"City Railway Station, Bengaluru - KSPCB",,IN,12.9756843,77.5660749,5574,OpenAQ
+"Moti Doongri, Alwar - RSPCB",,IN,27.554793,76.611536,5576,OpenAQ
+"Pusa, New Delhi - IMD",,IN,28.610304,77.0996943,5581,OpenAQ
+"Ashok Nagar, Udaipur - RSPCB",,IN,24.5886166,73.6321397,5585,OpenAQ
+"Sirifort, Delhi - CPCB",,IN,28.5504249,77.2159377,5586,OpenAQ
+"Collectorate, Jodhpur - RSPCB",,IN,26.268249,73.0193853,5587,OpenAQ
+"RIICO Ind. Area III, Bhiwadi - RSPCB",,IN,28.194909,76.862296,5588,OpenAQ
+"Ardhali Bazar, Varanasi - UPPCB",,IN,25.3505986,82.9083074,5590,OpenAQ
+"Gangapur Road, Nashik - MPCB",,IN,20.0073285,73.7762427,5592,OpenAQ
+"Pimpleshwar Mandir, Thane - MPCB",,IN,19.192056,72.9585188,5593,OpenAQ
+"Muzaffarpur Collectorate, Muzaffarpur - BSPCB",,IN,26.1209,85.3647,5594,OpenAQ
+"Secretariat, Amaravati - APPCB",,IN,16.5150833,80.5181667,5596,OpenAQ
+"Sector - 125, Noida, UP - UPPCB",,IN,28.5447608,77.3231257,5598,OpenAQ
+"Bollaram Industrial Area, Hyderabad - TSPCB",,IN,17.540891,78.358528,5599,OpenAQ
+"Lajpat Nagar, Moradabad - UPPCB",,IN,28.825341,78.7213009,5601,OpenAQ
+"Asansol Court Area, Asansol - WBPCB",,IN,23.685297,86.945968,5602,OpenAQ
+"Sector-2 Industrial Area, Pithampur - MPPCB",,IN,22.624758,75.675238,5603,OpenAQ
+"Nishant Ganj, Lucknow - UPPCB",,IN,26.871428,80.957145,5604,OpenAQ
+"Peenya, Bengaluru - CPCB",,IN,13.0270199,77.494094,5607,OpenAQ
+"GM Office, Brajrajnagar - OSPCB",,IN,21.8004996,83.8396977,5608,OpenAQ
+"Anam Kala Kendram, Rajamahendravaram - APPCB",,IN,16.9872867,81.7363176,5609,OpenAQ
+"North Campus, DU, Delhi - IMD",,IN,28.6573814,77.1585447,5610,OpenAQ
+"Chandrapur, Chandrapur - MPCB",,IN,19.645324,77.6345232,5611,OpenAQ
+"Shastri Nagar, Jaipur - RSPCB",,IN,26.9502929,75.730943,5612,OpenAQ
+"ITO, New Delhi - CPCB",,IN,28.628624,77.24106,5613,OpenAQ
+"Padmapukur, Howrah - WBPCB",,IN,22.5687319,88.2797276,5614,OpenAQ
+"Sidhu Kanhu Indoor Stadium, Durgapur - WBPCB",,IN,23.5404352,87.2892225,5615,OpenAQ
+"Sector - 62, Noida, UP - IMD",,IN,28.6245479,77.3577104,5616,OpenAQ
+"Sector- 16A, Faridabad - HSPCB",,IN,28.4088421,77.3099081,5617,OpenAQ
+"Vindhyachal STPS, Singrauli - MPPCB",,IN,24.10897,82.64558,5619,OpenAQ
+"Opp GPO Civil Lines, Nagpur - MPCB",,IN,21.152875,79.0517531,5621,OpenAQ
+"NSIT Dwarka, Delhi - CPCB",,IN,28.60909,77.0325413,5622,OpenAQ
+"Central University, Hyderabad - TSPCB",,IN,17.460103,78.334361,5623,OpenAQ
