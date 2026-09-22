@@ -50,4 +50,14 @@ The feature-builder requires a much larger historical dataset before model train
 
 Once the backfill produces at least 100 trainable rows, run `.venv/bin/python src/models/train_pm25_model.py`. It uses a chronological 80/20 split, compares mean, linear-regression, and random-forest baselines by test MAE, and saves the selected model plus metrics under `models/`.
 
+## Prediction API
+
+After training a model, start the API from the project root:
+
+```bash
+.venv/bin/uvicorn app:app --app-dir src/api --reload
+```
+
+Visit <http://127.0.0.1:8000/docs> for interactive API documentation. `GET /health` reports whether a model is ready, `GET /model-info` returns required input fields, and `POST /predict` returns predicted next-day PM2.5 and its AQI category.
+
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.
