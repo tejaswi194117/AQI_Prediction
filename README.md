@@ -60,4 +60,14 @@ After training a model, start the API from the project root:
 
 Visit <http://127.0.0.1:8000/docs> for interactive API documentation. `GET /health` reports whether a model is ready, `GET /model-info` returns required input fields, and `POST /predict` returns predicted next-day PM2.5 and its AQI category.
 
+## Dashboard
+
+With the API running, open a second terminal at the project root and run:
+
+```bash
+.venv/bin/streamlit run dashboard/app.py
+```
+
+The dashboard checks API/model readiness, renders the feature fields expected by the saved model, and displays the next-day PM2.5 prediction with its AQI category.
+
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.
