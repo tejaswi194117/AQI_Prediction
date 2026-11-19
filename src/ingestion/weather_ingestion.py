@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from datetime import datetime, timedelta
+from run_manifest import record_extraction
 
 # Defaults retrieve the prior 30 complete days, avoiding the hard-coded 2025
 # window. Explicit dates make historical backfills reproducible.
@@ -32,13 +33,14 @@ params = {
 
 print(f"Starting weather ingestion for {START_DATE} to {END_DATE}...")
 
-response = requests.get(URL, params=params, timeout=30)
+try:
+    response = requests.get(URL, params=params, timeout=30)
+    response.raise_for_status()
+except requests.RequestException as error:
+    record_extraction("Open-Meteo historical weather", "failed", error=error)
+    raise
 
 print("HTTP Status:", response.status_code)
-
-if response.status_code != 200:
-    print("Error:", response.text)
-    raise SystemExit(1)
 
 data = response.json()
 
@@ -52,3 +54,9 @@ with open(output_file, "w") as f:
 
 print(f"Raw weather data saved to: {output_file}")
 print("Number of hourly records:", len(data["hourly"]["time"]))
+record_extraction(
+    "Open-Meteo historical weather",
+    "success",
+    output_file,
+    len(data["hourly"]["time"]),
+)

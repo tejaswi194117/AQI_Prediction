@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
+from run_manifest import record_extraction
 
 
 # Load environment variables
@@ -17,8 +18,9 @@ URL = "https://api.openaq.org/v3/locations"
 def fetch_openaq_data():
 
     if not API_KEY:
-        print("ERROR: OPENAQ_API_KEY not found in .env")
-        return
+        error = "OPENAQ_API_KEY not found in .env"
+        record_extraction("OpenAQ locations", "failed", error=error)
+        raise RuntimeError(error)
 
     print("Starting OpenAQ data ingestion...")
 
@@ -57,6 +59,10 @@ def fetch_openaq_data():
             json.dump(data, file, indent=2)
 
         print("Raw data saved to:", output_file)
+        record_extraction(
+            "OpenAQ locations", "success", output_file,
+            len(data.get("results", [])),
+        )
         print(
             "Number of records:",
             len(data.get("results", []))
@@ -64,9 +70,13 @@ def fetch_openaq_data():
 
     except requests.exceptions.RequestException as error:
         print("API request failed:", error)
+        record_extraction("OpenAQ locations", "failed", error=error)
+        raise
 
     except Exception as error:
         print("Unexpected error:", error)
+        record_extraction("OpenAQ locations", "failed", error=error)
+        raise
 
 
 if __name__ == "__main__":

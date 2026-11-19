@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
+from run_manifest import record_extraction
 
 
 load_dotenv()
@@ -17,8 +18,9 @@ BASE_URL = "https://api.openaq.org/v3/locations"
 def fetch_sensors():
 
     if not API_KEY:
-        print("ERROR: OPENAQ_API_KEY not found in .env")
-        return
+        error = "OPENAQ_API_KEY not found in .env"
+        record_extraction("OpenAQ sensors", "failed", error=error)
+        raise RuntimeError(error)
 
     print("Starting OpenAQ sensor ingestion...")
 
@@ -38,6 +40,7 @@ def fetch_sensors():
     )
 
     all_sensors = []
+    failed_locations = []
 
     for location_id in location_ids:
 
@@ -76,6 +79,7 @@ def fetch_sensors():
                 f"Location {location_id} failed:",
                 error
             )
+            failed_locations.append(location_id)
 
     raw_dir = Path("data/raw")
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -95,6 +99,13 @@ def fetch_sensors():
     print()
     print("Raw sensor data saved to:", output_file)
     print("Total sensors collected:", len(all_sensors))
+    status = "partial" if failed_locations else "success"
+    record_extraction(
+        "OpenAQ sensors", status, output_file, len(all_sensors),
+        error=f"Failed locations: {failed_locations}" if failed_locations else None,
+    )
+    if not all_sensors:
+        raise RuntimeError("OpenAQ sensor extraction returned no sensors.")
 
 
 if __name__ == "__main__":

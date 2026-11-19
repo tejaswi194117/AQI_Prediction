@@ -1,83 +1,105 @@
-# AQI Prediction Project
+# Air Quality Analysis and PM2.5 Forecasting
 
-An Airflow-orchestrated data pipeline that collects Delhi air-quality and weather data, produces a daily analytical dataset, validates it, and can load it into PostgreSQL. It is the data foundation for a future AQI prediction model; no machine-learning model is included yet.
+This project builds a Delhi-focused air-quality data pipeline and a dashboard for historical pollution trends. It also contains an optional next-day PM2.5 baseline model, API, and prediction view. The tracked CSV files are small historical examples; they are not evidence of a current live ingestion or a trained model.
+
+## Scope and AQI terminology
+
+The forecast target is next-day **PM2.5 concentration**. The displayed category is derived from this project's PM2.5 thresholds (Good through Severe). It is a PM2.5 category proxy, not an official multi-pollutant AQI calculation. The dashboard shows daily pollutant and weather trends for the locations present in the gold dataset; the default configuration is centered on Delhi.
+
+## Data sources and access
+
+- **OpenAQ API v3** supplies monitoring locations, sensors, and pollutant measurements. Create an API key through OpenAQ, set `OPENAQ_API_KEY` in a local `.env` file, and do not commit that file.
+- **Open-Meteo Historical Weather API** supplies hourly temperature, relative humidity, wind speed, and precipitation for the configured coordinates and dates. The code calls its public archive endpoint without an API key.
+- The project does not currently ingest CPCB data or depend on a Kaggle dataset. The committed CSVs are derived project artifacts, not a replacement for source attribution in a submitted report.
 
 ## Pipeline
 
 ```text
-OpenAQ locations → stations → sensors → measurements ┐
-                                                       ├→ weather-aware join → daily gold AQI dataset
-Open-Meteo historical weather ─────────────────────────┘
+OpenAQ locations -> stations -> sensors -> measurements -> staging CSV
+Open-Meteo historical weather -----------------------> staging CSV
+                                              \\      /
+                                    time-aligned join
+                                            |
+                            daily station-level gold CSV
+                                            |
+                      quality checks -> ML feature CSV
+                                            |
+                      optional PostgreSQL gold load
 ```
 
-The default geographic focus is Delhi (28.6139, 77.2090) within a 0.5-degree bounding box. All location, date-range, and database settings are configurable through `.env`.
-
-For a one-time historical backfill, set `AQI_HISTORY_DAYS=365` and keep `OPENAQ_GRANULARITY=days` in `.env`, then run the pipeline. This requests paginated daily sensor values and matching daily Open-Meteo summaries. Reset the window to a short rolling value afterward for normal daily Airflow runs.
+Airflow defines daily ingestion, transformation, quality, feature-build, and database-load tasks in `airflow/dags/aqi_pipeline.py`. Compose files define the Airflow stack and a separate API/dashboard stack. Code and Compose definitions do not establish that services have been run successfully.
 
 ## Setup
 
 ```bash
 cp .env.example .env
-# Set OPENAQ_API_KEY. Set AQI_DATABASE_URL if PostgreSQL loading is required.
-.venv/bin/python -m pip install -r requirments.txt
+# Set OPENAQ_API_KEY. Set AQI_DATABASE_URL only if loading the gold CSV to PostgreSQL.
+python -m pip install -r requirments.txt
 ```
 
-Run the local pipeline from the repository root:
+Optional configuration is listed in `.env.example`. `AQI_HISTORY_DAYS` controls the default shared lookback; `OPENAQ_HISTORY_START_DATE` / `OPENAQ_HISTORY_END_DATE` and `WEATHER_START_DATE` / `WEATHER_END_DATE` allow explicit source windows. `ANALYSIS_START_DATE` / `ANALYSIS_END_DATE` can narrow the join. Use a long historical window for model training, then choose an appropriate rolling window for scheduled operation.
+
+Run the complete ingestion and ETL sequence from the repository root:
 
 ```bash
-.venv/bin/python src/ingestion/openaq_ingestion.py
-.venv/bin/python src/etl/clean_openaq.py
-.venv/bin/python src/ingestion/openaq_sensors.py
-.venv/bin/python src/ingestion/openaq_measurements.py
-.venv/bin/python src/etl/clean_measurements.py
-.venv/bin/python src/ingestion/weather_ingestion.py
-.venv/bin/python src/etl/clean_weather.py
-.venv/bin/python src/etl/join_pollution_weather.py
-.venv/bin/python src/etl/create_analytical_dataset.py
-.venv/bin/python src/etl/data_quality.py
+bash scripts/run_pipeline.sh
 ```
 
-For Airflow, run `docker compose up --build` from `airflow/`; the UI is at <http://localhost:8080>. The Compose environment reads `.env` from the project root.
+The helper stops on the first error so later steps cannot silently reuse stale outputs. To run a single step manually, use `.venv/bin/python` and run each command only after the previous step succeeds.
 
-## Outputs
-
-- `data/staging/`: cleaned station, measurement, and weather extracts.
-- `data/cleaned/pollution_weather_joined.csv`: hourly pollution/weather records.
-- `data/gold/delhi_daily_air_quality.csv`: daily per-location analytical dataset.
-- `data/gold/ml_aqi_features.csv`: leakage-safe daily ML features and the next-day PM2.5 target.
-
-The feature-builder requires a much larger historical dataset before model training. It produces lag-1/3/7-day PM2.5 values, trailing rolling means, calendar fields, and a next-day PM2.5/category label without crossing missing dates.
-
-Once the backfill produces at least 100 trainable rows, run `.venv/bin/python src/models/train_pm25_model.py`. It uses a chronological 80/20 split, compares mean, linear-regression, and random-forest baselines by test MAE, and saves the selected model plus metrics under `models/`.
-
-## Prediction API
-
-After training a model, start the API from the project root:
-
-```bash
-.venv/bin/uvicorn app:app --app-dir src/api --reload
-```
-
-Visit <http://127.0.0.1:8000/docs> for interactive API documentation. `GET /health` reports whether a model is ready, `GET /model-info` returns required input fields, and `POST /predict` returns predicted next-day PM2.5 and its AQI category.
+The ingestion scripts retain timestamped raw JSON under `data/raw/` locally; that directory is ignored by Git. Staging outputs go under `data/staging/`, the hourly join and quality log under `data/cleaned/`, and daily analytical data under `data/gold/`.
 
 ## Dashboard
 
-With the API running, open a second terminal at the project root and run:
+Run from the repository root:
 
 ```bash
-.venv/bin/streamlit run dashboard/app.py
+streamlit run dashboard/app.py
 ```
 
-The dashboard checks API/model readiness, renders the feature fields expected by the saved model, and displays the next-day PM2.5 prediction with its AQI category.
+The **Pollution trends** view reads `data/gold/delhi_daily_air_quality.csv` and provides date/station filters, daily pollutant charts, weather charts, a table, and CSV download. It reflects the local gold file; rerun the pipeline to refresh it. The **Next-day prediction** view requires a running API and trained model.
 
-## Docker deployment
+## Forecast model and API
 
-After a trained `models/pm25_next_day_model.joblib` exists, start the API and dashboard together:
+The feature builder creates PM2.5 lag and rolling features and a next-day target without treating missing dates as adjacent days. It writes the ignored file `data/gold/ml_aqi_features.csv`. The training script requires at least 100 rows by default and uses a chronological date split to compare mean, linear-regression, and random-forest baselines. It writes `models/pm25_next_day_model.joblib` and `models/pm25_next_day_metrics.json`; generated files are intentionally excluded from Git.
+
+After a successful feature build with sufficient history:
+
+```bash
+python src/models/train_pm25_model.py
+uvicorn app:app --app-dir src/api --reload
+```
+
+The API exposes `/health`, `/model-info`, and `/predict`. Open `http://127.0.0.1:8000/docs` for local interactive documentation. Do not describe the model as validated or deployed until the backfill, training, evaluation, and serving steps have actually succeeded and their evidence is recorded.
+
+## Airflow and PostgreSQL
+
+Airflow can be started from `airflow/` with `docker compose up --build`; its local UI is at `http://localhost:8080`. The compose file starts PostgreSQL for Airflow metadata and defaults `AQI_DATABASE_URL` to that same local database for the gold load. Set `AQI_DATABASE_URL` in `.env` to use a separate target database. The loader writes `analytics.delhi_daily_air_quality` through `src/database/load_gold.py`.
+
+## Docker prediction stack
+
+Once the model artifact exists, run from the repository root:
 
 ```bash
 docker compose -f docker-compose.app.yml up --build
 ```
 
-The API is available at <http://127.0.0.1:8000/docs> and the dashboard at <http://127.0.0.1:8501>. The Compose stack mounts `models/` read-only into the API container, keeping generated model artifacts out of Git.
+The API is exposed on port 8000 and the dashboard on port 8501. This app stack does not include Airflow or the analytics database.
 
-See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the full architecture, schemas, data contracts, and known next steps.
+## Current limitations and evidence to collect
+
+- The checked-in gold data is a small historical snapshot with missing pollutant values; it is not sufficient to train the default model.
+- The dashboard and prediction API are source code only. No deployment URL, successful Airflow run, populated target database, trained model, or evaluation report is committed.
+- The database loader creates/replaces the gold table from the CSV; no migration or committed gold-table DDL is supplied.
+- Record a successful end-to-end backfill, quality output, train/test date ranges and metrics, model artifact version, API response, and dashboard screenshot/link before claiming operational completion.
+- `tests/` contains unit tests for feature creation, training, API utilities, the dashboard client, and OpenAQ pagination. Their existence alone does not prove that they pass.
+
+## Repository map
+
+- `src/ingestion/`: OpenAQ and Open-Meteo extraction
+- `src/etl/`: staging cleanup, time alignment, daily aggregation, validation
+- `src/features/` and `src/models/`: next-day PM2.5 feature generation and training
+- `src/api/` and `dashboard/`: prediction service and analysis UI
+- `airflow/`: scheduled pipeline definition and local Compose stack
+- `sql/`: base and analytical SQL examples
+- `data/`: checked-in sample CSV outputs; raw extracts and generated ML artifacts are ignored

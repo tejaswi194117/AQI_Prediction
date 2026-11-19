@@ -6,6 +6,7 @@ COPY requirments.txt ./
 RUN pip install --no-cache-dir -r requirments.txt
 
 COPY dashboard ./dashboard
+COPY data/gold/delhi_daily_air_quality.csv ./data/gold/delhi_daily_air_quality.csv
 
 EXPOSE 8501
 

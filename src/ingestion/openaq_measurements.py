@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 from dotenv import load_dotenv
+from run_manifest import record_extraction
 
 
 load_dotenv()
@@ -83,8 +84,9 @@ def fetch_sensor_history(sensor, headers, request_get=requests.get):
 
 def fetch_measurements():
     if not API_KEY:
-        print("ERROR: OPENAQ_API_KEY not found in .env")
-        return
+        error = "OPENAQ_API_KEY not found in .env"
+        record_extraction("OpenAQ measurements", "failed", error=error)
+        raise RuntimeError(error)
 
     raw_dir = Path("data/raw")
     sensor_files = sorted(raw_dir.glob("openaq_sensors_*.json"))
@@ -101,12 +103,14 @@ def fetch_measurements():
     print(f"Fetching {GRANULARITY} data from {datetime_from} to {datetime_to}")
     headers = {"X-API-Key": API_KEY}
     all_measurements = []
+    failed_sensors = []
 
     for sensor in sensors:
         try:
             all_measurements.extend(fetch_sensor_history(sensor, headers))
         except requests.exceptions.RequestException as error:
             print(f"Sensor {sensor.get('id')} failed: {error}")
+            failed_sensors.append(sensor.get("id"))
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = raw_dir / f"openaq_measurements_{timestamp}.json"
@@ -115,6 +119,13 @@ def fetch_measurements():
 
     print(f"Raw measurement data saved to: {output_file}")
     print(f"Total {GRANULARITY} records collected: {len(all_measurements)}")
+    status = "partial" if failed_sensors else "success"
+    record_extraction(
+        "OpenAQ measurements", status, output_file, len(all_measurements),
+        error=f"Failed sensors: {failed_sensors}" if failed_sensors else None,
+    )
+    if not all_measurements:
+        raise RuntimeError("OpenAQ measurement extraction returned no records.")
 
 
 if __name__ == "__main__":

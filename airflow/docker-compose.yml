@@ -24,7 +24,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       OPENAQ_API_KEY: ${OPENAQ_API_KEY}
-      AQI_DATABASE_URL: ${AQI_DATABASE_URL}
+      AQI_DATABASE_URL: ${AQI_DATABASE_URL:-postgresql+psycopg2://airflow:airflow@postgres/airflow}
     command:
       - bash
       - -c
@@ -51,7 +51,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       OPENAQ_API_KEY: ${OPENAQ_API_KEY}
-      AQI_DATABASE_URL: ${AQI_DATABASE_URL}
+      AQI_DATABASE_URL: ${AQI_DATABASE_URL:-postgresql+psycopg2://airflow:airflow@postgres/airflow}
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -75,7 +75,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       OPENAQ_API_KEY: ${OPENAQ_API_KEY}
-      AQI_DATABASE_URL: ${AQI_DATABASE_URL}
+      AQI_DATABASE_URL: ${AQI_DATABASE_URL:-postgresql+psycopg2://airflow:airflow@postgres/airflow}
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs

@@ -4,7 +4,10 @@
 __pycache__/
 *.pyc
 airflow/
-data/
+data/*
+!data/gold/
+data/gold/*
+!data/gold/delhi_daily_air_quality.csv
 docs/
 notebooks/
 tests/
